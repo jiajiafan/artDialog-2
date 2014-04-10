@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>dialog demo.</title>
+<style>
+html,body {margin:0; padding:0;}
+body{background:rgb(245,235,199) url('./images/65292_top.jpg') right top scroll no-repeat;}
+.dialog_div {margin:50px auto auto 20px;}
+.dialog_div input {display:block; margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div id="img_1" style="display:none;">
+	<img src="./images/psb.jpg" />
+</div>
+<div class="dialog_div">
+<h3>精致 dialog 体验</h3>
+	<input id="btn_1" type="button" value="普通对话框" /> <input id="btn_2" type="button" value="消息提示" />
+	<input id="btn_3" type="button" value="内容填充型" />
+	<input id="btn_4" type="button" value="操作提示型" />
+	<input id="btn_5" type="button" value="列表型" />
+<div>
+</body>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript" src="http://mycdn.sinaapp.com/js/jquery/dialog/dialog.js"></script>
+<script>
+var id = function(str){
+	return document.getElementById(str);
+};
+artDialog.notice = function (options) {
+    var opt = options || {},
+        api, aConfig, hide, wrap, top,
+        duration = 1000;
+        
+    var config = {
+        id: 'Notice',
+        left: '100%',
+        top: '100%',
+        fixed: true,
+        drag: false,
+        resize: false,
+        follow: null,
+        lock: false,
+        init: function(here){
+            api = this;
+            aConfig = api.config;
+            wrap = api.DOM.wrap;
+            top = parseInt(wrap[0].style.top);
+            hide = top + wrap[0].offsetHeight;
+            
+            wrap.css('top', hide + 'px')
+                .animate({top: top + 'px'}, duration, function () {
+                    opt.init && opt.init.call(api, here);
+                });
+        },
+        close: function(here){
+            wrap.animate({top: hide + 'px'}, duration, function () {
+                opt.close && opt.close.call(this, here);
+                aConfig.close = $.noop;
+                api.close();
+            });
+            
+            return false;
+        }
+    };	
+    
+    for (var i in opt) {
+        if (config[i] === undefined) config[i] = opt[i];
+    };
+    
+    return artDialog(config);
+};
+$(document).ready(function() {	
+	$('#btn_1').click(function(){
+	    $('#btn_1').attr('disabled', 'true');
+		$.dialog({
+			id : 'dia_1',
+			title: '欢迎',
+			content: '欢迎使用artDialog对话框组件！',
+			icon: 'succ',
+			ok: function(){
+				if ('undefined' == typeof this._temp){
+				    this._temp = true;
+					this.title('提示').content('请注意，对话框2秒后自动关闭！').lock().time(2);
+					return false;
+				}
+				return true;
+			},
+			close: function(){$('#btn_1').removeAttr('disabled');}
+		});
+	});
+
+	$('#btn_2').click(function(){
+		$('#btn_2').attr('disabled', 'true');
+		$.dialog.notice({
+            id : 'dia_2',
+			title : false,
+			icon : 'warn',
+			//width : '260px',
+			content : '其实，我观察你很久了！',
+			time : 5,
+			close : function(){$('#btn_2').removeAttr('disabled');}
+		});
+	});
+
+	$('#btn_3').click(function(){
+            $.dialog({
+                id : 'dia_3',
+		title : false,
+		content : id('img_1').innerHTML,
+		padding:0,
+                lock:true
+            });
+	});
+
+	$('#btn_4').click(function(){
+		$('#btn_4').attr('disabled', 'true');
+		$.dialog({
+            id : 'dia_4',
+			title : '消息',
+			icon : 'succ',
+			content: '内容保存成功',
+			time : 1.5,
+			lock : true,
+			close : function(){$('#btn_4').removeAttr('disabled');}
+		});
+	});
+
+	$('#btn_5').click(function(){
+		$('#btn_5').attr('disabled', 'true');
+		$.dialog({
+            id : 'dia_5',
+			title : '消息',
+			left : '100%',
+			top : '100%',
+			width : 240,
+			height : '100%',
+			fixed : true,
+			content : '点击添加好友',
+			drag : false,
+			close : function(){$('#btn_5').removeAttr('disabled');}
+		});
+	});
+});
+</script>
+</html>
